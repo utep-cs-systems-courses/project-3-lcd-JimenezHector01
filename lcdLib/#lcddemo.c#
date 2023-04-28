@@ -22,26 +22,8 @@ main()
 
   clearScreen(COLOR_WHITE);
   int base = screenHeight - 10;
-
-  for(int i = 0; i < 15; i++)
-    fillRectangle(0, base - (3*i), 60 - (4*i), 3, COLOR_BLACK);
-
-  for(int i = 0; i < 18; i++)
-    fillRectangle(30 + (2*i), base - (3*i), 70 - (4*i), 3, COLOR_BLACK);
-
-  for(int i = 0; i < 16; i++)
-    fillRectangle(36 + (3*i), base - (3*i), 64 - (4*i), 3, COLOR_BLACK);
+  int j = 0;
   
-  for(int i = 0; i < 15; i++)
-    fillRectangle(0 + (2*i), base - (3*i), 60 - (4*i), 3, COLOR_GRAY);
-
-  for(int i = 0; i < 9; i++)
-    fillRectangle(50 + (3*i), base - (3*i), 50 - (6*i), 3, COLOR_GRAY);
-
-  for(int i = 0; i < 20; i++)
-    fillRectangle(80 + (2*i), base - (3*i), 80 - (4*i), 3, COLOR_GRAY);
-
   fillRectangle(0, base, screenWidth, 10, COLOR_BLACK);
   fillRectangle(10, base - 10, 10, 10, COLOR_BLACK);
-
 }
