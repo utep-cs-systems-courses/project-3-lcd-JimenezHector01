@@ -14,7 +14,7 @@
 
 #define SWITCHES 15
 
-char blue = 31, green = 0, red = 31;
+
 unsigned char step = 0;
 const int base = screenHeight - 10;
 
@@ -51,7 +51,7 @@ switch_interrupt_handler()
 // axis zero for col, axis 1 for row
 
 short drawPos[2] = {10,base-10}, controlPos[2] = {10, base-20};
-short rowVelocity = 1, rowLimits[2] = {base-50, base-10};
+short rowVelocity = 3, rowLimits[2] = {base-50, base-10};
 
 void
 draw_ball(int col, int row, unsigned short color)
@@ -59,6 +59,10 @@ draw_ball(int col, int row, unsigned short color)
   fillRectangle(col-1, row-1, 10, 10, color);
 }
 
+draw_Obs(int col, int row, unsigned short color)
+{
+  fillRectangle(col, row, 4, 7, color);
+}
 
 void
 screen_update_ball()
@@ -73,8 +77,22 @@ screen_update_ball()
     drawPos[axis] = controlPos[axis];
   draw_ball(drawPos[0], drawPos[1], COLOR_BLACK); /* draw */
 }
-  
 
+short startObs[2] = {screenWidth, base-7}, obsControl[2] = {screenWidth, base-7};
+short obsVelocity = 3, obsLimit = -4;
+
+void screen_update_obs()
+{
+  for(char axis = 0; axis<2; axis++)
+    if(startObs[axis] != obsControl[axis])
+       goto redraw;
+    return;
+   redraw:
+       draw_Obs(startObs[0], startObs[1], COLOR_WHITE);
+       for(char axis = 0; axis < 2; axis++)
+	 startObs[axis] = obsControl[axis];
+       draw_Obs(startObs[0], startObs[1], COLOR_GREEN);
+}
 short redrawScreen = 1;
 u_int controlFontColor = COLOR_GREEN;
 
@@ -83,24 +101,33 @@ void wdt_c_handler()
   static int secCount = 0;
   int count = 0;
   secCount ++;
-  if (secCount >= 25) {		/* 10/sec */
-   
+
+  if (secCount%25 == 0) {		/* 10/sec */   
     {				/* move ball */
       short oldRow = controlPos[1];
       short newRow = oldRow + rowVelocity;
-      if (newRow <= rowLimits[0] || newRow >= rowLimits[1]){
-	rowVelocity = -rowVelocity;
-      }
+      if (newRow <= rowLimits[0] || newRow >= rowLimits[1])
+	rowVelocity = -rowVelocity; 
       else
 	controlPos[1] = newRow;
     }
 
     {
+      short oldObs = startObs[0];
+      short newObs = oldObs + obsVelocity;
+      if(newObs <= obsLimit)
+	newObs = startObs;
+      else
+	obsControl[0] = newObs;
+    }
+
+    
+    {
       if(step <= 30)
 	step++;
       else
 	step = 0;
-      secCount = 0;
+      //secCount = 0;
     }
     redrawScreen = 1;
   }
@@ -136,6 +163,7 @@ void main()
 void update_shape()
 {
   screen_update_ball();
+  screen_update_obs();
 }
 
 void
