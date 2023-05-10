@@ -51,7 +51,7 @@ switch_interrupt_handler()
 // axis zero for col, axis 1 for row
 
 short drawPos[2] = {10,base-10}, controlPos[2] = {10, base-20};
-short rowVelocity = 3, rowLimits[2] = {base-50, base-10};
+short rowVelocity = 0, rowLimits[2] = {base-50, base-10};
 
 void
 draw_ball(int col, int row, unsigned short color)
@@ -61,7 +61,7 @@ draw_ball(int col, int row, unsigned short color)
 
 draw_Obs(int col, int row, unsigned short color)
 {
-  fillRectangle(col, row, 4, 7, color);
+  fillRectangle(col, row, 4, 13, color);
 }
 
 void
@@ -78,7 +78,7 @@ screen_update_ball()
   draw_ball(drawPos[0], drawPos[1], COLOR_BLACK); /* draw */
 }
 
-short startObs[2] = {screenWidth, base-7}, obsControl[2] = {screenWidth, base-7};
+short startObs[2] = {screenWidth, base-11}, obsControl[2] = {screenWidth-3, base-13};
 short obsVelocity = 3, obsLimit = -4;
 
 void screen_update_obs()
@@ -95,7 +95,7 @@ void screen_update_obs()
 }
 short redrawScreen = 1;
 u_int controlFontColor = COLOR_GREEN;
-
+short jump = 0;
 void wdt_c_handler()
 {
   static int secCount = 0;
@@ -105,29 +105,47 @@ void wdt_c_handler()
   if (secCount%25 == 0) {		/* 10/sec */   
     {				/* move ball */
       short oldRow = controlPos[1];
-      short newRow = oldRow + rowVelocity;
-      if (newRow <= rowLimits[0] || newRow >= rowLimits[1])
-	rowVelocity = -rowVelocity; 
+      short newRow = oldRow - rowVelocity;
+      if (newRow <= rowLimits[0])
+        rowVelocity = -rowVelocity;
+      else if (newRow >= base-8)
+	rowVelocity = 0;
       else
 	controlPos[1] = newRow;
     }
 
     {
       short oldObs = startObs[0];
-      short newObs = oldObs + obsVelocity;
-      if(newObs <= obsLimit)
-	newObs = startObs;
+      short newObs = oldObs - obsVelocity;
+      if(newObs >= screenWidth)
+        startObs[0] = screenWidth;
       else
 	obsControl[0] = newObs;
     }
 
+    {
+      if(controlPos[0]>=obsControl[0] && controlPos[0]<=obsControl[0]+4)
+	if(controlPos[1]>=obsControl[1] && controlPos[1]<=obsControl[1]+11)
+	  for(int i=0; i<6; i++){
+	    if(secCount%2 == 0)
+	      draw_ball(controlPos[0],controlPos[1], COLOR_BLACK);
+	    if(secCount%3 == 0)
+	      draw_ball(controlPos[0],controlPos[1], COLOR_WHITE);
+	  }
+    }
+
     
     {
+      if(switches & SW1){
+	rowVelocity = 3;
+	buzzer_set_period(1000);
+      }else{
+	buzzer_set_period(0);
+      }
       if(step <= 30)
 	step++;
       else
 	step = 0;
-      //secCount = 0;
     }
     redrawScreen = 1;
   }
@@ -146,8 +164,10 @@ void main()
   
   enableWDTInterrupts();      /**< enable periodic interrupt */
   or_sr(0x8);	              /**< GIE (enable interrupts) */
-  
+
+  buzzer_init();
   clearScreen(COLOR_WHITE);
+  drawString5x7(20, 20, "Block Jumper", COLOR_BLACK, COLOR_GRAY);
   fillRectangle(0, base, screenWidth, screenHeight-base, COLOR_BLACK);
   while (1) {			/* forever */
     if (redrawScreen) {
