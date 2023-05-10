@@ -2,6 +2,7 @@
 #include <libTimer.h>
 #include "lcdutils.h"
 #include "lcddraw.h"
+#include "buzzer.h"
 
 // WARNING: LCD DISPLAY USES P1.0.  Do not touch!!! 
 
@@ -138,9 +139,9 @@ void wdt_c_handler()
     {
       if(switches & SW1){
 	rowVelocity = 3;
-	//	buzzer_set_period(1000);
+      	buzzer_set_period(1000);
       }else{
-	//	buzzer_set_period(0);
+	buzzer_set_period(0);
       }
       if(step <= 30)
 	step++;
@@ -165,7 +166,7 @@ void main()
   enableWDTInterrupts();      /**< enable periodic interrupt */
   or_sr(0x8);	              /**< GIE (enable interrupts) */
 
-  //  buzzer_init();
+  buzzer_init();
   clearScreen(COLOR_WHITE);
   fillRectangle(0, base, screenWidth, screenHeight-base, COLOR_BLACK);
   drawString8x12(40, 40, "Jumper", COLOR_WHITE, COLOR_BLACK);
