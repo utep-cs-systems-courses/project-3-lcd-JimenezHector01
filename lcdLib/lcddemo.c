@@ -41,6 +41,9 @@ main()
   for(int i = 0; i < 20; i++)
     fillRectangle(80 + (2*i), base - (3*i), 80 - (4*i), 3, COLOR_GRAY);
 
+  drawString5x7(20, 20, "5x7 Hello", COLOR_WHITE, COLOR_BLACK);
+  drawString8x12(20, 50, "8x12 Hello", COLOR_WHITE, COLOR_BLACK);
+  
   fillRectangle(0, base, screenWidth, 10, COLOR_BLACK);
   fillRectangle(10, base - 10, 10, 10, COLOR_BLACK);
 

@@ -5,26 +5,13 @@
 #include "lcddraw.h"
 
 
-/** Draw single pixel at x,row 
- *
- *  \param col Column to draw to
- *  \param row Row to draw to
- *  \param colorBGR Color of pixel in BGR
- */
+
 void drawPixel(u_char col, u_char row, u_int colorBGR) 
 {
   lcd_setArea(col, row, col, row);
   lcd_writeColor(colorBGR);
 }
 
-/** Fill rectangle
- *
- *  \param colMin Column start
- *  \param rowMin Row start
- *  \param width Width of rectangle
- *  \param height height of rectangle
- *  \param colorBGR Color of rectangle in BGR
- */
 void fillRectangle(u_char colMin, u_char rowMin, u_char width, u_char height, 
 		   u_int colorBGR)
 {
@@ -37,10 +24,6 @@ void fillRectangle(u_char colMin, u_char rowMin, u_char width, u_char height,
   }
 }
 
-/** Clear screen (fill with color)
- *  
- *  \param colorBGR The color to fill screen
- */
 void clearScreen(u_int colorBGR) 
 {
   u_char w = screenWidth;
@@ -77,12 +60,6 @@ void drawChar5x7(u_char rcol, u_char rrow, char c,
  *  FONT_SM - small (5x8,) FONT_MD - medium (8x12,) FONT_LG - large (11x16)
  *  FONT_SM_BKG, FONT_MD_BKG, FONT_LG_BKG - as above, but with background color
  *  Adapted from RobG's EduKit
- *
- *  \param col Column to start drawing string
- *  \param row Row to start drawing string
- *  \param string The string
- *  \param fgColorBGR Foreground color in BGR
- *  \param bgColorBGR Background color in BGR
  */
 void drawString5x7(u_char col, u_char row, char *string,
 		u_int fgColorBGR, u_int bgColorBGR)
@@ -104,9 +81,10 @@ void drawChar8x12(u_char rcol, u_char rrow, char c,
 
   lcd_setArea(rcol,rrow, rcol+7, rrow+12);
   while(row<13){
-    while(col<5) {
+    while(col<8) {
       u_int colorBGR = (font_8x12[oc][col] & bit) ? fgColorBGR : bgColorBGR;
       lcd_writeColor(colorBGR);
+      col++;
     }
     col = 0;
     bit <<=1;
@@ -120,7 +98,7 @@ void drawString8x12(u_char col, u_char row, char *string,
   u_char cols = col;
   while(*string){
     drawChar8x12(cols, row, *string++, fgColorBGR, bgColorBGR);
-    cols += 6;
+    cols += 11;
   }
 }
 

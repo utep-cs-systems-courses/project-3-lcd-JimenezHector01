@@ -7,17 +7,16 @@ LDFLAGS		= -L../lib -L/opt/ti/msp430_gcc/include/
 CC              = msp430-elf-gcc
 AS              = msp430-elf-gcc -mmcu=${CPU} -c
 
-all:wakedemo.elf buzzer.elf
+all:wakedemo.elf
 
 #additional rules for files
 wakedemo.elf: ${COMMON_OBJECTS} wakedemo.o wdt_handler.o
 	${CC} ${CFLAGS} ${LDFLAGS} -o $@ $^ -lTimer -lLcd 
 
-buzzer.elf: ${COMMON_OBJECTS} buzzer.o wakedemo.o ../lib/libTimer.a
-	${CC} ${CFLAGS} -o $@ $^
 
-load: wakedemo.elf buzzer.elf
+load: wakedemo.elf
 	msp430loader.sh $^
 
 clean:
 	rm -f *.o *.elf
+
